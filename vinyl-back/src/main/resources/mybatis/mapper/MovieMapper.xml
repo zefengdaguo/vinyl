@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neila.vinylback.mapper.MovieMapper">
+    <select id="list" resultType="com.neila.vinylback.dto.MovieBlockDTO">
+        <choose>
+            <when test="categories != null">
+                select distinct id,title,poster_path,rate from movie
+                inner join movie_category mc
+                on
+                mc.movie_id = movie.id and movie.is_able = 1
+                <foreach collection="categories" item="category" open="and (" close=")" separator="or">
+                    mc.category_id = #{category}
+                </foreach>
+                <if test="personId != null">
+                    inner join movie_person mp
+                    on mp.person_id = #{personId} and mp.movie_id = movie.id
+                </if>
+            </when>
+            <otherwise>
+                select distinct id,title,poster_path,rate from movie
+                <if test="personId == null">
+                    where is_able = 1
+                </if>
+                <if test="personId != null">
+                    inner join movie_person mp
+                    on mp.person_id = #{personId} and mp.movie_id = movie.id
+                </if>
+            </otherwise>
+        </choose>
+
+        <choose>
+            <when test="sort != null and sort eq 'rate'">
+                order by rate desc, last_update desc
+            </when>
+            <otherwise>
+                order by last_update desc, rate desc
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="addRoles">
+        <if test="moviePersonRoleDTOS != null">
+            insert into movie_person values
+            <foreach collection="moviePersonRoleDTOS" item="item" separator=",">
+                (#{movieId},#{item.personId},#{item.roleId},(select name from role where id =
+                #{item.roleId}))
+            </foreach>
+        </if>
+    </insert>
+
+    <select id="getComment" resultType="com.neila.vinylback.dto.CommentDTO">
+        SELECT um.id, um.user_id, u.username, um.rate,um.date,um.`comment`, um.like_number
+        from user_movie um
+        INNER JOIN user u
+        on
+        u.id=um.user_id and um.movie_id = #{id}
+        <choose>
+            <when test="sort != null and sort eq 'rate'">
+                order by rate desc
+            </when>
+            <otherwise>
+                order by date desc
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="adminList" resultType="com.neila.vinylback.dto.AdminMovieDTO">
+        select id, title, creator, is_able from movie
+        <if test="isAble != null">
+            where is_able = #{isAble}
+        </if>
+    </select>
+
+</mapper>

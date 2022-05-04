@@ -1,0 +1,60 @@
+
+spring:
+  datasource:
+    username: {...}
+    password: {...}
+    url: jdbc:mysql://{...}/movie_platform?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: {...}
+    port: 6379
+    password: {...}
+  servlet:
+    multipart:
+      # 单个文件大小限制
+      max-file-size: 5MB
+      # 单次请求所有文件大小限制
+      max-request-size: 20MB
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: false
+  params: count=countSql
+  supportMethodsArguments: true
+
+mybatis:
+  type-aliases-package: com.neila.vinylback.entity
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 静态资源路径
+file:
+  path: /media/vinyl
+  avatar: ${file.path}/avatar
+  profile: ${file.path}/profile
+  poster: ${file.path}/poster
+  articleImg: ${file.path}/articleImg
+
+# api 统一前缀
+server:
+  servlet:
+    context-path: /api
+  port: 8081
+
+# Sa-Token配置
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: satoken
+  # token有效期，单位s 7天
+  timeout: 604800
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false

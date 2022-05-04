@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neila.vinylback.mapper.WatchMapper">
+    <select id="getWatchList" resultType="com.neila.vinylback.dto.MovieListDTO">
+        select um.movie_id,m.title,m.original_title,m.poster_path,m.year,m.release_date,um.date mark_date,um.rate,um.comment,m.is_tv
+        from user_movie um
+        inner join movie m
+        on um.movie_id = m.id and um.user_id = #{userId} and um.status = #{status}
+        <choose>
+            <when test="sort != null and sort eq 'rate'">
+                order by rate desc, um.date desc
+            </when>
+            <otherwise>
+                order by um.date desc, rate desc
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

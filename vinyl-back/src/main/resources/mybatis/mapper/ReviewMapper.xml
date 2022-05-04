@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neila.vinylback.mapper.ReviewMapper">
+    <select id="listPage" resultType="com.neila.vinylback.dto.ReviewListDTO">
+        SELECT r.id, r.title, r.description, r.user_id, u.username author_name, u.avatar_path user_avatar, r.movie_id, m.title movie_title, m.poster_path movie_poster, r.like_number, r.date
+        FROM `review` r
+        INNER JOIN `user` u
+        on r.user_id = u.id
+        <if test="userId != null">
+            and r.user_id = #{userId}
+        </if>
+        INNER JOIN movie m
+        on m.id = r.movie_id
+        <if test="movieId != null">
+            and r.movie_id = #{movieId}
+        </if>
+        order by r.date desc
+    </select>
+
+
+</mapper>
